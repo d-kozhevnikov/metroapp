@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Metro app</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script language="JavaScript">
+        $(document).ready(function () {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.src = "http://www.metro.spb.ru/uploads/img/risunki/map_shema_28_12_l.png";
+
+            var rects = [];
+
+            var clearCanvas = function () {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            };
+
+            var repaint = function () {
+                clearCanvas();
+
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                ctx.fillStyle = "rgba(200, 0, 0, 0.5)";
+                var len = rects.length;
+                for (var i = 0; i != len; ++i) {
+                    var rect = rects[i];
+                    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+                }
+            };
+
+            img.onload = repaint;
+
+            var drag = false;
+            $("canvas")
+                    .mousedown(function (e) {
+                        drag = true;
+                        var offset = $(this).offset();
+                        rects.push({x: e.pageX - offset.left, y: e.pageY - offset.top, w: 0, h: 0});
+                    })
+                    .mousemove(function (e) {
+                        if (drag) {
+                            var offset = $(this).offset();
+                            var x = e.pageX - offset.left;
+                            var y = e.pageY - offset.top;
+                            var last = rects[rects.length - 1];
+                            last.w = x - last.x;
+                            last.h = y - last.y;
+                            repaint();
+                        }
+                    })
+                    .mouseup(function (e) {
+                        drag = false;
+                    });
+        });
+    </script>
+
+    <style type="text/css">
+        body {
+            text-align: center;
+            background: #f2f6f8;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <div id="control">Hello</div>
+    <canvas id="canvas" width="1200" height="1658"></canvas>
+</div>
+
+</body>
+</html>
